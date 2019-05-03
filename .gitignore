@@ -1,0 +1,14 @@
+*.user
+*.so
+*.exe
+*.dll
+*.o
+*.pdf
+*.jar
+*.zip
+*.tar.gz
+*~
+#*
+*#
+build/*
+bin/*

@@ -1,0 +1,18 @@
+[requires]
+# https://bintray.com/range-v3/range-v3/range-v3%3Aericniebler
+range-v3/0.5.0@ericniebler/stable
+
+fmt/5.3.0@bincrafters/stable
+
+doctest/2.3.1@bincrafters/stable
+
+# http://www.partow.net/programming/exprtk/index.html#simpleexample01
+exprtk/20181202@bincrafters/stable
+
+
+[generators]
+cmake
+
+[options]
+Poco:shared=False
+# exprtk:shared=True
