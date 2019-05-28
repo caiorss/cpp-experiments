@@ -132,8 +132,9 @@ void custom_function()
    parser.compile(expression_string,expression);
 
    T result = expression.value();
-   printf("Result: %10.5f\n",result);
+   printf("Result: %10.4f\n",result);
 }
+
 
 // Simple Example 14 - Standard Deviation Via Vector Processing Methods
 template <typename T>
@@ -141,6 +142,7 @@ void stddev_example()
 {
    typedef exprtk::expression<T> expression_t;
    typedef exprtk::parser<T>         parser_t;
+
 
    std::string stddev_program =
                   " var x[25] := {                     "
