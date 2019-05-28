@@ -4,7 +4,7 @@ project(cppexperiments)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(FORCE_CLANG ON)
+set(FORCE_CLANG OFF)
 
 # Force compiler to Clang++
 if(FORCE_CLANG)
@@ -24,39 +24,60 @@ else()
 endif()
 message(" [INFO] CMake binary dir = ${CMAKE_BINARY_DIR}")
 
+execute_process(COMMAND  echo " [INFO] PATH = $\{which conan\}" )
 
-#configure_file(${CMAKE_)
 
-if(false)
-add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake"
-    DEPENDS ${CMAKE_CURRENT_LIST_DIR}/conanfile.txt
-    COMMAND /home/archbox/opt/anaconda3/bin/conan install . --install-folder "${CMAKE_BINARY_DIR}"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    )
+# Copy target file to current directory whenerver it is rebuilt
+function(copy_after_build TARGET_NAME )
+    # Note: CMAKE_CURRENT_LIST_DIR is the directory where is this
+    # CMakeLists.txt file.
+    set(DESTDIR ${CMAKE_CURRENT_LIST_DIR}/bin/)
+    file(MAKE_DIRECTORY ${DESTDIR})
+
+    # Copy binary file to <CMakeLists.txt didctory>./bin
+    # after target is compiled.
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+                               $<TARGET_FILE:${TARGET_NAME}> ${DESTDIR}
+                               )
+endfunction()
+
+
+# ============= Conan Boosttrap =============================#
+
+# Download automatically, you can also just copy the conan.cmake file
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+   file(DOWNLOAD "https://github.com/conan-io/cmake-conan/raw/v0.13/conan.cmake"
+                 "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
 
+include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-message(" [TRACE] Before Creating conan file.")
+conan_cmake_run(REQUIRES
+                  range-v3/0.5.0@ericniebler/stable
+                  fmt/5.3.0@bincrafters/stable
+                  doctest/2.3.1@bincrafters/stable
+                  exprtk/20181202@bincrafters/stable
+                BASIC_SETUP
+                BUILD missing)
 
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    message(" [TRACE] Creating conan file ...")
-  execute_process(
-    COMMAND           conan install . --install-folder "${CMAKE_BINARY_DIR}"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-   )
-endif()
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+find_package(Boost REQUIRED COMPONENTS system context)
 
 
                #======= Targets Settings ===============+#
+
+
+
+set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+include(cotire)
 
 add_executable(rangesv3 "ranges-v3.cpp")
 #target_link_libraries(agtest PRIVATE ${CONAN_LIBS})
 
 add_executable(fmt-experiments fmt-experiments.cpp)
-target_link_libraries(fmt-experiments PRIVATE ${CONAN_LIBS})
+# target_link_libraries(fmt-experiments PRIVATE ${CONAN_LIBS})
 
 add_executable(doctest1 doctest1.cpp)
 target_link_libraries(doctest1 PRIVATE ${CONAN_LIBS})
@@ -64,5 +85,50 @@ target_link_libraries(doctest1 PRIVATE ${CONAN_LIBS})
 
 add_executable(exprtk1 exprtk1.cpp)
 target_link_libraries(exprtk1 PRIVATE ${CONAN_LIBS})
+cotire(exprtk1)
+
+
+add_executable(asio_server1 asio_server1.cpp)
+target_link_libraries(asio_server1 PRIVATE Boost::system pthread)
+
+add_executable(asio_server2 asio_server2.cpp)
+target_link_libraries(asio_server2 PRIVATE Boost::system pthread)
+copy_after_build(asio_server2)
+
+
+add_executable(asio_echo asio_echo.cpp)
+target_link_libraries(asio_echo PRIVATE Boost::system pthread)
+copy_after_build(asio_echo)
+
+
+add_executable(asio_basic1 asio_basic1.cpp)
+target_link_libraries(asio_basic1 PRIVATE Boost::system pthread)
+copy_after_build(asio_basic1)
+
+if(false)
+ add_executable(asio_stream_server asio_stream_server.cpp)
+ target_link_libraries(asio_stream_server PRIVATE Boost::system pthread)
+ copy_after_build(asio_stream_server)
+endif()
+
+
+add_executable(http_client_sync1 http_client_sync1.cpp)
+target_link_libraries(http_client_sync1 PRIVATE Boost::system pthread)
+copy_after_build(http_client_sync1)
+
+
+
+add_executable(http_client_async1 http_client_async1.cpp)
+target_link_libraries(http_client_async1 PRIVATE Boost::system pthread)
+cotire(http_client_async1)
+copy_after_build(http_client_async1)
+
+add_executable(coroutine1 coroutine1.cpp)
+copy_after_build(coroutine1)
+target_link_libraries(coroutine1 PRIVATE Boost::context)
+
+# add_executable(pimpl pimpl/main.cpp pimpl/robot.cpp)
+# target_include_directories(pimpl PRIVATE ./pimpl)
+
 
 
