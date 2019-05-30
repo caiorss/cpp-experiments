@@ -83,6 +83,7 @@ auto gen_sequence() -> std::generator<int>
 // Opt2 is empty
 int main() {
 
+
   auto opt = sum().get();
   if (opt) {
     std::cout << "Opt contains " << *opt << "\n";

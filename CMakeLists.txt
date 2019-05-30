@@ -12,6 +12,8 @@ if(FORCE_CLANG)
     set(CMAKE_CXX_COMPILER clang++)
 endif()
 
+message( [COMPILER] "Compiler = ${CMAKE_CXX_COMPILER}" )
+
 
 message(" [INFO]  System Name  - CMAKE_SYSTEM_NAME     = ${CMAKE_SYSTEM_NAME}")
 message(" [INFO]  Build type   - CMAKE_BUILD_TYPE      = ${CMAKE_BUILD_TYPE}")
@@ -54,14 +56,17 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
+# Possible values "default" and "llvm8"
+set(CONAN_PROFILE llvm8)
+
 conan_cmake_run(REQUIRES
                   range-v3/0.5.0@ericniebler/stable
                   fmt/5.3.0@bincrafters/stable
                   doctest/2.3.1@bincrafters/stable
                   exprtk/20181202@bincrafters/stable
+                PROFILE ${CONAN_PROFILE}
                 BASIC_SETUP
                 BUILD missing)
-
 
 find_package(Boost REQUIRED COMPONENTS system context)
 
@@ -73,52 +78,52 @@ find_package(Boost REQUIRED COMPONENTS system context)
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(cotire)
 
-add_executable(rangesv3 "ranges-v3.cpp")
+add_executable(rangesv3  misc/ranges-v3.cpp)
 #target_link_libraries(agtest PRIVATE ${CONAN_LIBS})
 
-add_executable(fmt-experiments fmt-experiments.cpp)
+add_executable(fmt-experiments misc/fmt-experiments.cpp)
 # target_link_libraries(fmt-experiments PRIVATE ${CONAN_LIBS})
 
-add_executable(doctest1 doctest1.cpp)
+add_executable(doctest1 misc/doctest1.cpp)
 target_link_libraries(doctest1 PRIVATE ${CONAN_LIBS})
 
 
-add_executable(exprtk1 exprtk1.cpp)
+add_executable(exprtk1 misc/exprtk1.cpp)
 target_link_libraries(exprtk1 PRIVATE ${CONAN_LIBS})
 cotire(exprtk1)
 
 
-add_executable(asio_server1 asio_server1.cpp)
+add_executable(asio_server1 asio/asio_server1.cpp)
 target_link_libraries(asio_server1 PRIVATE Boost::system pthread)
 
-add_executable(asio_server2 asio_server2.cpp)
+add_executable(asio_server2 asio/asio_server2.cpp)
 target_link_libraries(asio_server2 PRIVATE Boost::system pthread)
 copy_after_build(asio_server2)
 
 
-add_executable(asio_echo asio_echo.cpp)
+add_executable(asio_echo asio/asio_echo.cpp)
 target_link_libraries(asio_echo PRIVATE Boost::system pthread)
 copy_after_build(asio_echo)
 
 
-add_executable(asio_basic1 asio_basic1.cpp)
+add_executable(asio_basic1 asio/asio_basic1.cpp)
 target_link_libraries(asio_basic1 PRIVATE Boost::system pthread)
 copy_after_build(asio_basic1)
 
 if(false)
- add_executable(asio_stream_server asio_stream_server.cpp)
+ add_executable(asio_stream_server asio/asio_stream_server.cpp)
  target_link_libraries(asio_stream_server PRIVATE Boost::system pthread)
  copy_after_build(asio_stream_server)
 endif()
 
 
-add_executable(http_client_sync1 http_client_sync1.cpp)
+add_executable(http_client_sync1 asio/http_client_sync1.cpp)
 target_link_libraries(http_client_sync1 PRIVATE Boost::system pthread)
 copy_after_build(http_client_sync1)
 
 
 
-add_executable(http_client_async1 http_client_async1.cpp)
+add_executable(http_client_async1 asio/http_client_async1.cpp)
 target_link_libraries(http_client_async1 PRIVATE Boost::system pthread)
 cotire(http_client_async1)
 copy_after_build(http_client_async1)
@@ -131,13 +136,10 @@ target_link_libraries(coroutine1 PRIVATE Boost::context)
 message([COMPILER] ${CMAKE_CXX_COMPILER_ID})
 
 if(${CMAKE_CXX_COMPILER_ID} MATCHES CLANG OR TRUE)
- add_executable(cpp20-coroutine1 cpp20-coroutine1.cpp)
+  add_executable(cpp20-coroutine1 cpp20/cpp20-coroutine1.cpp)
   target_compile_features(cpp20-coroutine1 PRIVATE cxx_std_20)
   target_compile_options(cpp20-coroutine1 PRIVATE -fcoroutines-ts -stdlib=libc++ )
   target_link_options(cpp20-coroutine1 PUBLIC  -stdlib=libc++)
-
-  target_include_directories(cpp20-coroutine1 PRIVATE "/usr/include/c++/v1")
-
 endif()
 
 # add_executable(pimpl pimpl/main.cpp pimpl/robot.cpp)

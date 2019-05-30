@@ -84,7 +84,7 @@ public:
   }
 
 private:
-  tcp::acceptor acceptor_;
+  tcp::acceptor acceptor_;  
 
   void do_accept()
   {
