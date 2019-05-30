@@ -1,6 +1,11 @@
+#pragma cling load("/lib/libboost_context.so.1.67.0")
+
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <functional>
+#include <chrono>
+#include <thread>
 
 #include <boost/coroutine2/all.hpp>
 
@@ -86,6 +91,19 @@ int main()
             std::cout << " it = " << it << std::endl;
     }
 
+
+#if 0
+    std::puts("==== EXPERIMENT 4 == Iterators and coroutines =======");
+    {
+        // Note a coroutine is executed when created until first yield()
+        auto instance = bcr::coroutine<int>::pull_type{&factorialSequenceCoroutine};
+
+        std::for_each(std::begin(instance), std::end(instance), [](auto x){
+           std::cout << " " << x;
+        });
+        std::cout << std::endl;
+    }
+#endif
 
     std::cout << " [TRACE] Finishing main() " << std::endl;
     return EXIT_SUCCESS;

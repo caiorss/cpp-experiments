@@ -127,6 +127,19 @@ add_executable(coroutine1 coroutine1.cpp)
 copy_after_build(coroutine1)
 target_link_libraries(coroutine1 PRIVATE Boost::context)
 
+
+message([COMPILER] ${CMAKE_CXX_COMPILER_ID})
+
+if(${CMAKE_CXX_COMPILER_ID} MATCHES CLANG OR TRUE)
+ add_executable(cpp20-coroutine1 cpp20-coroutine1.cpp)
+  target_compile_features(cpp20-coroutine1 PRIVATE cxx_std_20)
+  target_compile_options(cpp20-coroutine1 PRIVATE -fcoroutines-ts -stdlib=libc++ )
+  target_link_options(cpp20-coroutine1 PUBLIC  -stdlib=libc++)
+
+  target_include_directories(cpp20-coroutine1 PRIVATE "/usr/include/c++/v1")
+
+endif()
+
 # add_executable(pimpl pimpl/main.cpp pimpl/robot.cpp)
 # target_include_directories(pimpl PRIVATE ./pimpl)
 
