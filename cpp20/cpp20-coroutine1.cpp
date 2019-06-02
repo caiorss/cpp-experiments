@@ -5,6 +5,9 @@
 #include <variant>
 #include <experimental/coroutine>
 
+// Only works on Visual Studio
+// #include <experimental/generator>
+
 using namespace std::experimental::coroutines_v1;
 
 template <class T>
@@ -70,7 +73,7 @@ co_optional_handle<int> sum2() {
 }
 
 #if 0
-auto gen_sequence() -> std::generator<int>
+auto gen_sequence() -> generator_t
 {
     co_yield 10;
     co_yield 16;
