@@ -63,13 +63,22 @@ conan_cmake_run(REQUIRES
                   range-v3/0.5.0@ericniebler/stable
                   fmt/5.3.0@bincrafters/stable
                   doctest/2.3.1@bincrafters/stable
+                  pybind11/2.2.4@conan/stable
                   exprtk/20181202@bincrafters/stable
+
+                  # Note: Add this repository for usign DLIB
+                  # $ conan remote add omaralvarez https://api.bintray.com/conan/omaralvarez/public-conan
+                  #
+                  # https://bintray.com/omaralvarez/public-conan/dlib%3Aomaralvarez/19.16.0%3Astable
+                  # https://github.com/omaralvarez/conan_dlib
+                  # dlib/19.16.0@omaralvarez/stable
+
                 PROFILE ${CONAN_PROFILE}
                 BASIC_SETUP
                 BUILD missing)
 
 find_package(Boost REQUIRED COMPONENTS system context)
-
+find_package(pybind11 REQUIRED)
 
                #======= Targets Settings ===============+#
 
@@ -85,8 +94,18 @@ add_executable(fmt-experiments misc/fmt-experiments.cpp)
 # target_link_libraries(fmt-experiments PRIVATE ${CONAN_LIBS})
 
 add_executable(doctest1 misc/doctest1.cpp)
-target_link_libraries(doctest1 PRIVATE ${CONAN_LIBS})
 
+
+
+add_executable(pyembed pyembed.cpp)
+target_link_libraries(pyembed PRIVATE pybind11::embed)
+copy_after_build(pyembed)
+
+
+configure_file(
+  "pyembed_script.py"
+  "${CMAKE_CURRENT_BINARY_DIR}/bin" COPYONLY
+)
 
 add_executable(exprtk1 misc/exprtk1.cpp)
 target_link_libraries(exprtk1 PRIVATE ${CONAN_LIBS})
