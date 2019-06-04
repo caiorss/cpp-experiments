@@ -12,6 +12,7 @@ if(FORCE_CLANG)
     set(CMAKE_CXX_COMPILER clang++)
 endif()
 
+
 message( [COMPILER] "Compiler = ${CMAKE_CXX_COMPILER}" )
 
 
@@ -57,7 +58,7 @@ endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 # Possible values "default" and "llvm8"
-set(CONAN_PROFILE llvm8)
+set(CONAN_PROFILE default)
 
 conan_cmake_run(REQUIRES
                   range-v3/0.5.0@ericniebler/stable
@@ -65,6 +66,7 @@ conan_cmake_run(REQUIRES
                   doctest/2.3.1@bincrafters/stable
                   pybind11/2.2.4@conan/stable
                   exprtk/20181202@bincrafters/stable
+                  gtest/1.8.1@bincrafters/stable
 
                   # Note: Add this repository for usign DLIB
                   # $ conan remote add omaralvarez https://api.bintray.com/conan/omaralvarez/public-conan
@@ -73,12 +75,13 @@ conan_cmake_run(REQUIRES
                   # https://github.com/omaralvarez/conan_dlib
                   # dlib/19.16.0@omaralvarez/stable
 
-                PROFILE ${CONAN_PROFILE}
+                # PROFILE ${CONAN_PROFILE}
                 BASIC_SETUP
                 BUILD missing)
 
 find_package(Boost REQUIRED COMPONENTS system context)
 find_package(pybind11 REQUIRED)
+find_package(GTest REQUIRED)
 
                #======= Targets Settings ===============+#
 
@@ -95,22 +98,30 @@ add_executable(fmt-experiments misc/fmt-experiments.cpp)
 
 add_executable(doctest1 misc/doctest1.cpp)
 
+#----- Google Testing -------------#
 
+enable_testing()
+add_executable(gtest-example gtest-example.cpp)
+target_link_libraries(gtest-example  GTest::GTest GTest::Main)
+add_test(GTestExperiment gtest-example)
+
+
+#---- Pybind11 - Pyembed ------------#
 
 add_executable(pyembed pyembed.cpp)
 target_link_libraries(pyembed PRIVATE pybind11::embed)
 copy_after_build(pyembed)
-
 
 configure_file(
   "pyembed_script.py"
   "${CMAKE_CURRENT_BINARY_DIR}/bin" COPYONLY
 )
 
-add_executable(exprtk1 misc/exprtk1.cpp)
-target_link_libraries(exprtk1 PRIVATE ${CONAN_LIBS})
-cotire(exprtk1)
-
+if(false)
+  add_executable(exprtk1 misc/exprtk1.cpp)
+  target_link_libraries(exprtk1 PRIVATE ${CONAN_LIBS})
+  cotire(exprtk1)
+endif()
 
 add_executable(asio_server1 asio/asio_server1.cpp)
 target_link_libraries(asio_server1 PRIVATE Boost::system pthread)
@@ -154,7 +165,7 @@ target_link_libraries(coroutine1 PRIVATE Boost::context)
 
 message([COMPILER] ${CMAKE_CXX_COMPILER_ID})
 
-if(${CMAKE_CXX_COMPILER_ID} MATCHES CLANG OR TRUE)
+if(${CMAKE_CXX_COMPILER_ID} MATCHES CLANG)
   add_executable(cpp20-coroutine1 cpp20/cpp20-coroutine1.cpp)
   target_compile_features(cpp20-coroutine1 PRIVATE cxx_std_20)
   target_compile_options(cpp20-coroutine1 PRIVATE -fcoroutines-ts -stdlib=libc++ )
