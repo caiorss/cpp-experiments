@@ -67,6 +67,15 @@ public:
         //luaL_loadstring(m_vm, code) || lua_pcall(m_vm, 0, LUA_MULTRET, 0);
     }
 
+    void showError()
+    {
+        if(::lua_gettop(m_vm) == 0)
+            return;
+        std::cerr << " [LUA ERROR]: " << ::lua_tostring(m_vm, -1) << "\n";
+        // Pop error message from stack
+        lua_pop(m_vm, 1);
+    }
+
     /// @brief Add gloabal string
     /// Reference: https://stackoverflow.com/questions/10087226/
     void addString(const char* name, const char* value)
