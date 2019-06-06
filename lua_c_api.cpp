@@ -79,6 +79,13 @@ public:
 
     }
 
+    using LuaFunction = int (*) (lua_State*);
+
+    void add_function(std::string const& name, LuaFunction func)
+    {
+        lua_register(m_vm, name.c_str(), func);
+    }
+
     /// @brief Return stack size
     int size()
     {
@@ -115,7 +122,7 @@ int main()
     vm.exec("print(' [LUA] 3 * 4 + 10 - 2 = ', 3 * 4 + 10 - 2);");
     vm.exec("printn(' Call function that does not exist.');");
 
-    lua_register(st, "c_lua_function", &c_lua_function);
+    vm.add_function("c_lua_function", &c_lua_function);
     vm.exec("print(' Result = ', c_lua_function(4, 5, 10))");
     std::cout << " Stack size = " << vm.size() << "\n";
 
