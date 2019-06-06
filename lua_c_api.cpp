@@ -1,11 +1,16 @@
 /**
+ *  Lua Virtual Machine Experiments
+ *
  * References:
+ *   + https://www.lua.org/manual/5.2/manual.html
  *   + http://www.troubleshooters.com/codecorn/lua/lua_c_calls_lua.htm
  *   + https://www.cs.usfca.edu/~galles/cs420/lecture/LuaLectures/LuaAndC.html
  *   + http://www.lua.org/manual/5.2/manual.html#luaL_newstate
  *   + https://csl.name/post/lua-and-cpp/
  *   + http://lua-users.org/lists/lua-l/2011-08/msg00650.html
- *   +
+ *   + GIST: https://gist.github.com/kazupon/3783231
+ *   + https://debian-administration.org/article/264/Embedding_a_scripting_language_inside_your_C/C_code
+ *   + https://dcc.ufrj.br/~fabiom/lua/12APIBasics.pdf
  *
  *  Lua native library in C (CLang)
  *   + https://cs.brynmawr.edu/Courses/cs380/fall2011/luar-topics2.pdf
@@ -88,7 +93,7 @@ public:
         ::lua_settable(m_vm, -3);
         lua_pop(m_vm, 2);
 
-    }
+    }   
 
     void add_function(std::string const& name, LuaFunction func)
     {
@@ -168,7 +173,7 @@ int main()
       }
 
     }
-    return 1;
+//    return 1;
 
     std::cout << " === Register global variable " << std::endl;
 
@@ -177,10 +182,36 @@ int main()
     std::cout << " Stack size = " << vm.size() << "\n";
 
 
-    std::cout << " === Run arithmetic expression ====" << std::endl;
+    std::cout << "=== Load Buffer =====================" << std::endl;
 
-    vm.exec("return (3.45 * 8.5, 10.5 / 5.6, 0.51656)");
-    std::cout << " Stack size = " << vm.size() << "\n";
+    {
+        vm.clean();
+        // "print('Script 1');  return 5.0 * 6.0 + 10.0, 4.5 * 10.2, 5 / 100.0;";
+        char buffer [] = R"(
+           x = 5.0 * 6.0 + 10.0;
+           y = 100.5 * 8.0 + 9.8 - 6 * x;
+           z = 2 * x  + 3 * y;
+           print("  [LUA] x = " .. x);
+           print("  [LUA} y = " .. y);
+           print("  [LUA] z = " .. z);
+           return x, y, z;
+        )";
+        // ::luaL_loadbuffer(st, buffer, std::size(buffer), nullptr)
+        int status = luaL_loadstring(st, buffer) || lua_pcall(st, 0, LUA_MULTRET, 0);
+        if(status != LUA_OK) vm.showError();
+        int size = vm.size();
+        std::cout << " [BEFORE LOAD BUFFER] stack size = " << size << "\n";
+
+        double z = luaL_checknumber(st, 1);
+        double y = luaL_checknumber(st, 2);
+        double x = luaL_checknumber(st, 3);
+
+        std::cout << " LUA_STACK VALUES =>> x = " << x <<  " ; y = "
+                  << y << " ; z = " << z << std::endl;
+        lua_pop(st, size);
+
+        std::cout << " [AFTER LOAD BUFFER] stack size = " << vm.size() << "\n";
+    }
 
     return 0;
 }
