@@ -12,3 +12,5 @@
 *#
 build/*
 bin/*
+.gdb_history
+gdb.txt
