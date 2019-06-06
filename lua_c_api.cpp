@@ -38,6 +38,8 @@ class LuaVM
 {
     lua_State* m_vm;
 public:
+     using LuaFunction = int (*) (lua_State*);
+
     LuaVM()
     {
         m_vm = ::luaL_newstate();
@@ -87,8 +89,6 @@ public:
         lua_pop(m_vm, 2);
 
     }
-
-    using LuaFunction = int (*) (lua_State*);
 
     void add_function(std::string const& name, LuaFunction func)
     {
