@@ -68,6 +68,9 @@ conan_cmake_run(REQUIRES
                   exprtk/20181202@bincrafters/stable
                   gtest/1.8.1@bincrafters/stable
 
+                  # Parser combinator library
+                  pegtl/2.8.0@taocpp/stable
+
                   # Note: Add this repository for usign DLIB
                   # $ conan remote add omaralvarez https://api.bintray.com/conan/omaralvarez/public-conan
                   #
@@ -105,6 +108,21 @@ add_executable(gtest-example gtest-example.cpp)
 target_link_libraries(gtest-example  GTest::GTest GTest::Main)
 add_test(GTestExperiment gtest-example)
 
+#---- Lua lua_c_api -------------------#
+
+add_executable(lua_c_api lua_c_api.cpp)
+target_link_libraries(lua_c_api PRIVATE lua-5.3)
+copy_after_build(lua_c_api)
+
+#----- Lua Sol2 -------------------#
+
+add_executable(luaSol1  lua-sol1.cpp)
+target_link_libraries(luaSol1 PRIVATE  lua-5.3)
+copy_after_build(luaSol1)
+
+#---- PEGTL - Parser Combinator -----#
+
+add_executable(pgetl1-parser pgetl1-parser.cpp)
 
 #---- Pybind11 - Pyembed ------------#
 
