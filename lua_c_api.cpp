@@ -12,6 +12,9 @@
  *   + https://debian-administration.org/article/264/Embedding_a_scripting_language_inside_your_C/C_code
  *   + https://dcc.ufrj.br/~fabiom/lua/12APIBasics.pdf
  *
+ *  C API General Reference Card
+ *   + http://oberon00.github.io/lua-cfuncidx/
+ *
  *  Lua native library in C (CLang)
  *   + https://cs.brynmawr.edu/Courses/cs380/fall2011/luar-topics2.pdf
  */
@@ -196,7 +199,7 @@ int main()
     {
         vm.clean();
         // "print('Script 1');  return 5.0 * 6.0 + 10.0, 4.5 * 10.2, 5 / 100.0;";
-        char buffer [] = R"(
+        char code [] = R"(
            x = 5.0 * 6.0 + 10.0;
            y = 100.5 * 8.0 + 9.8 - 6 * x;
            z = 2 * x  + 3 * y;
@@ -205,11 +208,8 @@ int main()
            print("  [LUA] z = " .. z);
            return x, y, z;
         )";
-        // ::luaL_loadbuffer(st, buffer, std::size(buffer), nullptr)
-        int status = luaL_loadstring(st, buffer) || lua_pcall(st, 0, LUA_MULTRET, 0);
-        if(status != LUA_OK) vm.showError();
-        int size = vm.size();
-        std::cout << " [BEFORE LOAD BUFFER] stack size = " << size << "\n";
+
+        vm.load(code);
 
         double z = luaL_checknumber(st, 1);
         double y = luaL_checknumber(st, 2);
@@ -217,7 +217,7 @@ int main()
 
         std::cout << " LUA_STACK VALUES =>> x = " << x <<  " ; y = "
                   << y << " ; z = " << z << std::endl;
-        lua_pop(st, size);
+        vm.clean();
 
         std::cout << " [AFTER LOAD BUFFER] stack size = " << vm.size() << "\n";
     }
