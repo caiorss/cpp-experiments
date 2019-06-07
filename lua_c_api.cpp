@@ -74,6 +74,15 @@ public:
         //luaL_loadstring(m_vm, code) || lua_pcall(m_vm, 0, LUA_MULTRET, 0);
     }
 
+    int load(std::string const& code)
+    {
+        int status = luaL_loadstring(m_vm, code.c_str())
+                     || lua_pcall(m_vm, 0, LUA_MULTRET, 0);
+        if(status != LUA_OK)
+            this->showError();
+        return status;
+    }
+
     void showError()
     {
         if(::lua_gettop(m_vm) == 0)
