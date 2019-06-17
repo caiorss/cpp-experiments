@@ -71,6 +71,8 @@ conan_cmake_run(REQUIRES
                   # Parser combinator library
                   pegtl/2.8.0@taocpp/stable
 
+                  tinyxml2/7.0.1@nicolastagliani/stable
+
                   # Note: Add this repository for usign DLIB
                   # $ conan remote add omaralvarez https://api.bintray.com/conan/omaralvarez/public-conan
                   #
@@ -85,8 +87,14 @@ conan_cmake_run(REQUIRES
 find_package(Boost REQUIRED COMPONENTS system context)
 find_package(pybind11 REQUIRED)
 find_package(GTest REQUIRED)
+# find_package(Tinyxml2_static REQUIRED)
 
-               #======= Targets Settings ===============+#
+
+ # ===== TinyXML 2 ===========================================#
+# set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
+# find_package(TinyXML2 REQUIRED)
+
+ #======= Targets Settings ===============+#
 
 
 
@@ -97,9 +105,16 @@ add_executable(rangesv3  misc/ranges-v3.cpp)
 #target_link_libraries(agtest PRIVATE ${CONAN_LIBS})
 
 add_executable(fmt-experiments misc/fmt-experiments.cpp)
+
 # target_link_libraries(fmt-experiments PRIVATE ${CONAN_LIBS})
 
 add_executable(doctest1 misc/doctest1.cpp)
+
+#----- TinyXML2 --------------------#
+
+
+add_executable(tinyxml2-test misc/tinyxml2-test.cpp)
+target_link_libraries(tinyxml2-test PRIVATE ${tinyxml2_LIBRARY})
 
 #----- Google Testing -------------#
 
