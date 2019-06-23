@@ -71,6 +71,10 @@ conan_cmake_run(REQUIRES
                   # Parser combinator library
                   pegtl/2.8.0@taocpp/stable
 
+                  # MUParser - parser for math formulas
+                  #
+                  muparser/2.2.6@conan/stable
+
                   tinyxml2/7.0.1@nicolastagliani/stable
 
                   # Note: Add this repository for usign DLIB
@@ -89,6 +93,7 @@ find_package(pybind11 REQUIRED)
 find_package(GTest REQUIRED)
 # find_package(Tinyxml2_static REQUIRED)
 
+#find_package(muparser REQUIRED)
 
  # ===== TinyXML 2 ===========================================#
 # set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
@@ -100,6 +105,10 @@ find_package(GTest REQUIRED)
 
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(cotire)
+
+
+add_executable(muparser1_formula muparser1_formula.cpp)
+target_link_libraries(muparser1_formula muparser)
 
 add_executable(rangesv3  misc/ranges-v3.cpp)
 #target_link_libraries(agtest PRIVATE ${CONAN_LIBS})
