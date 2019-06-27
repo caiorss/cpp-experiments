@@ -90,22 +90,18 @@ conan_cmake_run(REQUIRES
 
 
 find_package(pybind11 REQUIRED)
-find_package(GTest REQUIRED)
-# find_package(Tinyxml2_static REQUIRED)
 
-#find_package(muparser REQUIRED)
-
- # ===== TinyXML 2 ===========================================#
-# set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
-# find_package(TinyXML2 REQUIRED)
 
  #======= Targets Settings ===============+#
 
 add_subdirectory(asio)
+add_subdirectory(misc)
 
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(cotire)
 
+
+add_executable(boost_ptree boost_ptree.cpp )
 
 add_executable(muparser1_formula muparser1_formula.cpp)
 target_link_libraries(muparser1_formula muparser)
@@ -117,20 +113,6 @@ add_executable(fmt-experiments misc/fmt-experiments.cpp)
 
 # target_link_libraries(fmt-experiments PRIVATE ${CONAN_LIBS})
 
-add_executable(doctest1 misc/doctest1.cpp)
-
-#----- TinyXML2 --------------------#
-
-
-add_executable(tinyxml2-test misc/tinyxml2-test.cpp)
-target_link_libraries(tinyxml2-test PRIVATE ${tinyxml2_LIBRARY})
-
-#----- Google Testing -------------#
-
-enable_testing()
-add_executable(gtest-example gtest-example.cpp)
-target_link_libraries(gtest-example  GTest::GTest GTest::Main)
-add_test(GTestExperiment gtest-example)
 
 #---- Lua lua_c_api -------------------#
 
