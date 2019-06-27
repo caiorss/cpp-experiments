@@ -88,7 +88,7 @@ conan_cmake_run(REQUIRES
                 BASIC_SETUP
                 BUILD missing)
 
-find_package(Boost REQUIRED COMPONENTS system context)
+
 find_package(pybind11 REQUIRED)
 find_package(GTest REQUIRED)
 # find_package(Tinyxml2_static REQUIRED)
@@ -101,7 +101,7 @@ find_package(GTest REQUIRED)
 
  #======= Targets Settings ===============+#
 
-
+add_subdirectory(asio)
 
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(cotire)
@@ -165,44 +165,9 @@ if(false)
   cotire(exprtk1)
 endif()
 
-add_executable(asio_server1 asio/asio_server1.cpp)
-target_link_libraries(asio_server1 PRIVATE Boost::system pthread)
-
-add_executable(asio_server2 asio/asio_server2.cpp)
-target_link_libraries(asio_server2 PRIVATE Boost::system pthread)
-copy_after_build(asio_server2)
-
-
-add_executable(asio_echo asio/asio_echo.cpp)
-target_link_libraries(asio_echo PRIVATE Boost::system pthread)
-copy_after_build(asio_echo)
-
-
-add_executable(asio_basic1 asio/asio_basic1.cpp)
-target_link_libraries(asio_basic1 PRIVATE Boost::system pthread)
-copy_after_build(asio_basic1)
-
-if(false)
- add_executable(asio_stream_server asio/asio_stream_server.cpp)
- target_link_libraries(asio_stream_server PRIVATE Boost::system pthread)
- copy_after_build(asio_stream_server)
-endif()
-
-
-add_executable(http_client_sync1 asio/http_client_sync1.cpp)
-target_link_libraries(http_client_sync1 PRIVATE Boost::system pthread)
-copy_after_build(http_client_sync1)
-
-
-
-add_executable(http_client_async1 asio/http_client_async1.cpp)
-target_link_libraries(http_client_async1 PRIVATE Boost::system pthread)
-cotire(http_client_async1)
-copy_after_build(http_client_async1)
-
-add_executable(coroutine1 coroutine1.cpp)
-copy_after_build(coroutine1)
-target_link_libraries(coroutine1 PRIVATE Boost::context)
+# add_executable(coroutine1 coroutine1.cpp)
+#copy_after_build(coroutine1)
+# target_link_libraries(coroutine1 PRIVATE Boost::context)
 
 
 message([COMPILER] ${CMAKE_CXX_COMPILER_ID})
